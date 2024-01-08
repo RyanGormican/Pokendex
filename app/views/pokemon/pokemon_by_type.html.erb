@@ -1,0 +1,23 @@
+<!-- app/views/pokemon/pokemon_by_type.html.erb -->
+
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Pokedexxed - Pokemon by Type</title>
+  <%= stylesheet_link_tag 'styles', media: 'all', 'data-turbolinks-track': 'reload' %>
+  <%= javascript_include_tag 'application', 'data-turbolinks-track': 'reload' %>
+  <%= csrf_meta_tags %>
+</head>
+<body>
+  <div class="center">
+    <h1>Pokedexxed - Pokemon by Type</h1>
+    <ul>
+      <% @pokemon_by_type.each do |entry| %>
+        <li>
+          <%= link_to entry['pokemon']['name'].capitalize, entry['pokemon']['url'] %>
+        </li>
+      <% end %>
+    </ul>
+  </div>
+</body>
+</html>

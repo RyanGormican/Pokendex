@@ -24,9 +24,9 @@
         <th colspan="2">Type</th>
       </tr>
       <tr>
-        <td><%= @pokemon_details['types'][0]['type']['name'].capitalize %></td>
+        <td class="type-<%= @pokemon_details['types'][0]['type']['name'].downcase %>"><%= @pokemon_details['types'][0]['type']['name'].capitalize %></td>
         <% if @pokemon_details['types'][1] %>
-          <td><%= @pokemon_details['types'][1]['type']['name'].capitalize %></td>
+           <td class="type-<%= @pokemon_details['types'][1]['type']['name'].downcase %>"><%= @pokemon_details['types'][1]['type']['name'].capitalize %></td>
         <% else %>
           <td></td>
         <% end %>

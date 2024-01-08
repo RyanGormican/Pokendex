@@ -47,6 +47,16 @@ body {
     h1 {
       margin-bottom: 20px;
     }
+    .indexblock{
+    background-color: white;
+    color:red;
+    padding:5px;
+    margin:5px;
+ }
+    .indexblock a{
+    color:red;
+    text-decoration: none;
+ }
     .center{
       display:flex;
       text-align: center;
@@ -60,7 +70,7 @@ body {
       text-align: center;
       align-items:center;
       justify-content: center;
-      flex-direction: column;
+      flex-direction: row;
     }
     img {
       width: 50%;
@@ -102,7 +112,60 @@ body {
     .stat-special-defense {
       background-color: #78C850;
     }
-
+    .type-grass{
+     background-color: #78C850;
+    }
+    .type-dark{
+     background-color: #705848;
+    }
+     .type-dragon{
+     background-color: #7038F8;
+    }
+    .type-electric{
+     background-color: #F8D030;
+    }
+     .type-fire{
+     background-color: #F08030;
+    }
+     .type-fairy{
+     background-color: #EE99AC;
+    }
+     .type-fighting{
+     background-color: #C03028;
+    }
+     .type-flying{
+     background-color: #A890F0;
+    }
+     .type-ghost{
+     background-color: #705898;
+    }
+     .type-ground{
+     background-color: #E0C068;
+    }
+     .type-ice{
+     background-color: #98D8D8;
+    }
+     .type-normal{
+     background-color: #A8A878;
+    }
+     .type-poison{
+     background-color: #A040A0;
+    }
+     .type-psychic{
+     background-color: #F85888;
+    }
+     .type-rock{
+     background-color: #B8A038;
+    }
+     .type-steel{
+     background-color: #B8B8D0;
+    }
+     .type-water{
+     background-color: #6890F0;
+    }
+     .type-bug{
+     background-color: #78C850;
+    }
     .stat-speed {
       background-color: #F85888;
     }

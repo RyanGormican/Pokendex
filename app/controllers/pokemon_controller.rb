@@ -16,7 +16,19 @@ class PokemonController < ApplicationController
     response = Net::HTTP.get(uri)
     @pokemon_details = JSON.parse(response)
   end
-
+    def types
+    url = 'https://pokeapi.co/api/v2/type/'
+    uri = URI(url)
+    response = Net::HTTP.get(uri)
+    @pokemon_types = JSON.parse(response)['results'].first(18)
+  end
+  def pokemon_by_type
+    type_name = params[:type_name]
+    url = "https://pokeapi.co/api/v2/type/#{type_name}"
+    uri = URI(url)
+    response = Net::HTTP.get(uri)
+    @pokemon_by_type = JSON.parse(response)['pokemon']
+  end
   private
 
   def determine_background_color(pokemon_id)
