@@ -19,19 +19,35 @@
     <a>
       <img src="<%= pokemon_image_url %>" alt="<%= @pokemon_details['name'].capitalize %>">
     </a>
-    <table>
-      <tr>
-        <th colspan="2">Type</th>
-      </tr>
-      <tr>
-        <td class="type-<%= @pokemon_details['types'][0]['type']['name'].downcase %>"><%= @pokemon_details['types'][0]['type']['name'].capitalize %></td>
-        <% if @pokemon_details['types'][1] %>
-           <td class="type-<%= @pokemon_details['types'][1]['type']['name'].downcase %>"><%= @pokemon_details['types'][1]['type']['name'].capitalize %></td>
-        <% else %>
-          <td></td>
+   <table>
+  <tr>
+    <th colspan="<%= @pokemon_details['types'].length %>">Type</th>
+  </tr>
+  <tr>
+    <% @pokemon_details['types'].each do |type| %>
+      <td class="type-<%= type['type']['name'].downcase %>"><%= type['type']['name'].capitalize %></td>
+    <% end %>
+  </tr>
+</table>
+<table>
+  <tr>
+    <th colspan="3">Abilities</th>
+  </tr>
+  <% @pokemon_details['abilities'].each do |ability_data| %>
+    <tr>
+      <td>
+        <%= ability_data['ability']['name'].capitalize %>
+        <% flavor_text = fetch_flavor_text(ability_data['ability']['url']) %>
+          <%= flavor_text ? " - #{flavor_text}" : '' %>
+        <% if ability_data['is_hidden'] %>
+          (Hidden Ability)
+
         <% end %>
-      </tr>
-    </table>
+      </td>
+    </tr>
+  <% end %>
+</table>
+
     <table>
       <tr>
         <th colspan="3">Stats</th>

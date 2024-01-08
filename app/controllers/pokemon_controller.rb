@@ -4,32 +4,52 @@ class PokemonController < ApplicationController
 
   def nationaldex
     url = 'https://pokeapi.co/api/v2/pokemon?limit=1025&offset=0'
-    uri = URI(url)
-    response = Net::HTTP.get(uri)
-    @pokemon_data = JSON.parse(response)['results']
+    @pokemon_data = fetch_data(url)['results']
   end
 
   def show
     pokemon_id = params[:id]
     url = "https://pokeapi.co/api/v2/pokemon/#{pokemon_id}"
-    uri = URI(url)
-    response = Net::HTTP.get(uri)
-    @pokemon_details = JSON.parse(response)
+    @pokemon_details = fetch_data(url)
+    @abilities = fetch_abilities(@pokemon_details['abilities'])
   end
-    def types
+
+  def types
     url = 'https://pokeapi.co/api/v2/type/'
-    uri = URI(url)
-    response = Net::HTTP.get(uri)
-    @pokemon_types = JSON.parse(response)['results'].first(18)
+    @pokemon_types = fetch_data(url)['results'].first(18)
   end
-   def pokemon_by_type
+
+  def pokemon_by_type
     type_name = params[:type_name]
     url = "https://pokeapi.co/api/v2/type/#{type_name}"
+    @pokemon_by_type = fetch_data(url)['pokemon']
+  end
+
+  private
+
+  def fetch_data(url)
     uri = URI(url)
     response = Net::HTTP.get(uri)
-    @pokemon_by_type = JSON.parse(response)['pokemon']
+    JSON.parse(response)
   end
-  private
+  
+  def fetch_flavor_text(ability_url)
+    ability_data = fetch_data(ability_url)
+    flavor_text_entry = ability_data['flavor_text_entries'].find { |entry| entry['language']['name'] == 'en' }
+    flavor_text_entry['flavor_text'] if flavor_text_entry
+  end
+
+  def fetch_abilities(abilities)
+    abilities.map do |ability_data|
+      ability_url = ability_data['ability']['url']
+      flavor_text = fetch_flavor_text(ability_url)
+      {
+        'name' => ability_data['ability']['name'],
+        'is_hidden' => ability_data['is_hidden'],
+        'flavor_text' => flavor_text
+      }
+    end
+  end
 
   def determine_background_color(pokemon_id)
     case pokemon_id
@@ -56,5 +76,5 @@ class PokemonController < ApplicationController
     end
   end
 
-  helper_method :determine_background_color
+  helper_method :determine_background_color, :fetch_flavor_text, :fetch_data
 end
