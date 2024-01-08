@@ -1,5 +1,4 @@
 <!-- app/views/pokemon/types.html.erb -->
-
 <!DOCTYPE html>
 <html>
 <head>
@@ -9,12 +8,22 @@
   <%= csrf_meta_tags %>
 </head>
 <body>
+  <a href="/" class="dex-link">Home</a>
+
   <div class="center">
-    <h1>Pokedexxed - Pokemon Types</h1>
-    
-      <% @pokemon_types.each do |type| %>
-         <div class="indexblock"> <%= link_to type['name'].capitalize, pokemon_by_type_path(type['name']) %></div>
+    <h1>Pokemon Types</h1>
+
+    <div class="row">
+      <% @pokemon_types.each_slice(4) do |types_set| %>
+        <div class="types-row">
+          <% types_set.each do |type| %> 
+            <div class="pokeblock type-<%= type['name'].downcase %>">
+              <%= link_to type['name'].capitalize, pokemon_by_type_path(type['name']) %>
+            </div>
+          <% end %>
+        </div>
       <% end %>
+    </div>
 
   </div>
 </body>

@@ -10,12 +10,18 @@
 </head>
 <body>
   <div class="center">
-    <h1>Pokedexxed - Pokemon by Type</h1>
-    <ul>
-      <% @pokemon_by_type.each do |entry| %>
-        <li>
-          <%= link_to entry['pokemon']['name'].capitalize, entry['pokemon']['url'] %>
+  <a class="dex-link" href="/types" class="dex-link">Types</a>
+    <h1>   Types </h1>
+    <ul class="pokemon-grid">
+      <% @pokemon_by_type.each_with_index do |pokemon, index| %>
+        <li class="pokemon-item <%= determine_background_color(pokemon['pokemon']['url'].split('/').last.to_i) %>">
+          <span class="pokemon-id">#<%= index + 1 %></span>
+          <%= link_to pokemon['pokemon']['name'].capitalize, pokemon_show_path(pokemon['pokemon']['url'].split('/').last.to_i) %>
         </li>
+
+        <% if (index + 1) % 10 == 0 && (index + 1) < @pokemon_by_type.length %>
+          </ul><ul class="pokemon-grid">
+        <% end %>
       <% end %>
     </ul>
   </div>

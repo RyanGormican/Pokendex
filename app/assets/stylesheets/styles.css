@@ -47,11 +47,26 @@ body {
     h1 {
       margin-bottom: 20px;
     }
+       .types-row {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 10px;
+    }
     .indexblock{
     background-color: white;
     color:red;
     padding:5px;
     margin:5px;
+ }
+ .pokeblock{
+    padding:5px;
+    margin:5px;
+    font-size: 5vh;
+      flex-basis: 23%;
+ }
+ .pokeblock a{
+       color:white;
+ text-decoration:none;
  }
     .indexblock a{
     color:red;

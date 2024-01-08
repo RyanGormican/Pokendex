@@ -22,7 +22,7 @@ class PokemonController < ApplicationController
     response = Net::HTTP.get(uri)
     @pokemon_types = JSON.parse(response)['results'].first(18)
   end
-  def pokemon_by_type
+   def pokemon_by_type
     type_name = params[:type_name]
     url = "https://pokeapi.co/api/v2/type/#{type_name}"
     uri = URI(url)
