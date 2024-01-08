@@ -10,7 +10,7 @@
 </head>
 <body>
   <div class="center">
-    <a href="/pokemon" class="dex-link">Dex</a>
+    <a href="javascript:history.back()" class="dex-link">Dex</a>
     <h1><%= @pokemon_details['name'].capitalize %></h1>
   </div>
   <% pokemon_name = @pokemon_details['name'] %>\
@@ -60,6 +60,17 @@
 </tr>
       <% end %>
     </table>
+    <table>
+      <tr>
+        <td>
+          <p>Height: <%= @pokemon_details['height'] / 10.0 %> m</p>
+        </td>
+        <td>
+          <p>Weight: <%= @pokemon_details['weight'] / 10.0 %> kg</p>
+        </td>
+    </tr>
+  </table>
+
   </div>
 </body>
 </html>

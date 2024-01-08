@@ -11,19 +11,22 @@
 <body>
   <div class="center">
   <a class="dex-link" href="/types" class="dex-link">Types</a>
-    <h1>   Types </h1>
-    <ul class="pokemon-grid">
-      <% @pokemon_by_type.each_with_index do |pokemon, index| %>
-        <li class="pokemon-item <%= determine_background_color(pokemon['pokemon']['url'].split('/').last.to_i) %>">
-          <span class="pokemon-id">#<%= index + 1 %></span>
-          <%= link_to pokemon['pokemon']['name'].capitalize, pokemon_show_path(pokemon['pokemon']['url'].split('/').last.to_i) %>
-        </li>
+   <h1>  Pokendex </h1>
+   <h2>  <%= params[:type_name].capitalize %>  Types </h2>
+   <ul class="pokemon-grid">
+  <% @pokemon_by_type.each_with_index do |pokemon, index| %>
+    <% pokemon_id = pokemon['pokemon']['url'].split('/').last.to_i %>
+    <% next if pokemon_id > 1025 %>
+    <li class="pokemon-item <%= determine_background_color(pokemon_id) %>">
+      <span class="pokemon-id">#<%= pokemon_id %></span>
+      <%= link_to pokemon['pokemon']['name'].capitalize, pokemon_show_path(pokemon_id) %>
+    </li>
 
-        <% if (index + 1) % 10 == 0 && (index + 1) < @pokemon_by_type.length %>
-          </ul><ul class="pokemon-grid">
-        <% end %>
-      <% end %>
-    </ul>
+    <% if (index + 1) % 10 == 0 && (index + 1) < @pokemon_by_type.length %>
+      </ul><ul class="pokemon-grid">
+    <% end %>
+  <% end %>
+</ul>
   </div>
 </body>
 </html>
