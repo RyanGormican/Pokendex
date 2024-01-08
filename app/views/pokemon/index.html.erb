@@ -1,0 +1,16 @@
+<!-- app/views/pokemon/index.html.erb -->
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Pokedexxed</title>
+  <%= stylesheet_link_tag 'styles', media: 'all', 'data-turbolinks-track': 'reload' %>
+  <%= javascript_include_tag 'application', 'data-turbolinks-track': 'reload' %>
+  <%= csrf_meta_tags %>
+</head>
+<body>
+  <div class="center">
+    <h1>Pokedexxed</h1>
+    <h1> <%= link_to "National Dex", '/pokemon', class: "dexx-link" %> </h1>
+  </div>
+</body>
+</html>

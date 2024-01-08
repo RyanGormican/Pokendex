@@ -1,0 +1,19 @@
+<h1 class="centered">Pokedexxed</h1>
+<a href="/" class="dex-link">Home</a>
+
+<% if @pokemon_data.present? %>
+  <ul class="pokemon-grid">
+    <% @pokemon_data.each_with_index do |pokemon, index| %>
+      <li class="pokemon-item <%= determine_background_color(pokemon['url'].split('/').last.to_i) %>">
+        <span class="pokemon-id">#<%= index + 1 %></span>
+        <%= link_to pokemon['name'].capitalize, pokemon_show_path(index + 1) %>
+      </li>
+
+      <% if (index + 1) % 10 == 0 && (index + 1) < @pokemon_data.length %>
+        </ul><ul class="pokemon-grid">
+      <% end %>
+    <% end %>
+  </ul>
+<% else %>
+  <p>No Pokémon data available.</p>
+<% end %>
