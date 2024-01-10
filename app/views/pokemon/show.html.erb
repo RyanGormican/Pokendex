@@ -1,76 +1,206 @@
-<!-- app/views/pokemon/show.html.erb -->
-
 <!DOCTYPE html>
 <html>
+
 <head>
-  <title><%= @pokemon_details['name'].capitalize %></title>
-  <style>
-    
-  </style>
+    <title><%= @pokemon_details['name'].capitalize %></title>
+    <style>
+    </style>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </head>
+
 <body>
-  <div class="center">
-    <a href="javascript:history.back()" class="dex-link">Dex</a>
-    <h1><%= @pokemon_details['name'].capitalize %></h1>
-  </div>
-  <% pokemon_name = @pokemon_details['name'] %>\
-  <% pokemon_image_url = @pokemon_details['sprites']['other']['official-artwork']['front_default'] %>
-  <div class="center">
-    <a>
-      <img src="<%= pokemon_image_url %>" alt="<%= @pokemon_details['name'].capitalize %>">
-    </a>
-   <table>
-  <tr>
-    <th colspan="<%= @pokemon_details['types'].length %>">Type</th>
-  </tr>
-  <tr>
-    <% @pokemon_details['types'].each do |type| %>
-      <td class="type-<%= type['type']['name'].downcase %>"><%= type['type']['name'].capitalize %></td>
-    <% end %>
-  </tr>
-</table>
-<table>
-  <tr>
-    <th colspan="3">Abilities</th>
-  </tr>
-  <% @pokemon_details['abilities'].each do |ability_data| %>
-    <tr>
-      <td>
-        <%= ability_data['ability']['name'].capitalize %>
-        <% flavor_text = fetch_flavor_text(ability_data['ability']['url']) %>
-          <%= flavor_text ? " - #{flavor_text}" : '' %>
-        <% if ability_data['is_hidden'] %>
-          (Hidden Ability)
+    <div class="center">
+        <a href="javascript:history.back()" class="dex-link">Dex</a>
+        <h1 id="pokemonName"><%= @pokemon_details['name'].capitalize %></h1>
+    </div>
 
-        <% end %>
-      </td>
-    </tr>
-  <% end %>
-</table>
+    <% pokemon_name = @pokemon_details['name'] %>
+    <% pokemon_image_url = @pokemon_details['sprites']['other']['official-artwork']['front_default'] %>
 
-    <table>
-      <tr>
-        <th colspan="3">Stats</th>
-      </tr>
-      <% @pokemon_details['stats'].each do |stat| %>
+    <div class="center">
+        <div>
+            <button onclick="loadNormalForm()">Normal Form</button>
+            <% if @varieties.present? %>
+            <% @varieties.each do |variety| %>
+            <button class="varietyButton" data-url="<%= j variety['url'] %>">
+                <%= variety['name'].capitalize %>
+            </button>
+            <% end %>
+            <% end %>
+        </div>
+
+        <a>
+            <img id="pokemonImage" src="<%= pokemon_image_url %>"
+                alt="<%= @pokemon_details['name'].capitalize %>">
+        </a>
+
+        <!-- Type table -->
+        <table id="typeTable">
+            <tr>
+                <th colspan="<%= @pokemon_details['types'].length %>">Type</th>
+            </tr>
+            <tr>
+                <% @pokemon_details['types'].each do |type| %>
+                <td class="type-<%= type['type']['name'].downcase %>">
+                    <span id="<%= "typeName#{type['type']['name']}" %>"><%= type['type']['name'].capitalize %></span>
+                </td>
+                <% end %>
+            </tr>
+        </table>
+        <!-- Abilities table -->
+        <table id="abilitiesTable">
+            <tr>
+                <th colspan="3">Abilities</th>
+            </tr>
+            <% @pokemon_details['abilities'].each do |ability_data| %>
+            <tr>
+                <td>
+                    <span id="<%= "abilityName#{ability_data['ability']['name']}" %>"><%= ability_data['ability']['name'].capitalize %></span>
+                    <% flavor_text = fetch_flavor_text(ability_data['ability']['url']) %>
+                    <span id="<%= "abilityFlavorText#{ability_data['ability']['name']}" %>"><%= flavor_text ? " - #{flavor_text}" : '' %></span>
+                    <% if ability_data['is_hidden'] %>
+                    (Hidden Ability)
+                    <% end %>
+                </td>
+            </tr>
+            <% end %>
+        </table>
+        <!-- Stats table -->
+        <table id="statsTable">
+            <tr>
+                <th colspan="3">Stats</th>
+            </tr>
+            <% @pokemon_details['stats'].each do |stat| %>
+            <tr class="stat-<%= stat['stat']['name'].downcase %>">
+                <td id="<%= "statName#{stat['stat']['name']}" %>"><%= stat['stat']['name'].split('-').map(&:capitalize).join(' ') %></td>
+                <td id="<%= "statValue#{stat['stat']['name']}" %>"><%= stat['base_stat'] %></td>
+            </tr>
+            <% end %>
+        </table>
+        <!-- Height and Weight table -->
+        <table id="heightWeightTable">
+            <tr>
+                <td>
+                    <p>Height: <span id="heightValue"><%= @pokemon_details['height'] / 10.0 %> m</span></p>
+                </td>
+                <td>
+                    <p>Weight: <span id="weightValue"><%= @pokemon_details['weight'] / 10.0 %> kg</span></p>
+                </td>
+            </tr>
+        </table>
+    </div>
+
+<script>
+  function loadNormalForm() {
+      $.ajax({
+        url: "<%= j pokemon_show_path(id: @pokemon_details['id']) %>",
+        success: function (data) {
+        
+          $("#pokemonName").text($(data).find("#pokemonName").text());
+          $("#pokemonImage").attr("src", $(data).find("#pokemonImage").attr("src"));
+
+          $.each(<%= raw @pokemon_details['stats'].to_json %>, function (index, stat) {
+            var statName = stat['stat']['name'];
+            var updatedStatName = $(data).find("#statName" + statName).html();
+            var updatedStatValue = $(data).find("#statValue" + statName).html();
+
+            if (updatedStatName !== undefined && updatedStatValue !== undefined) {
+              $("#statName" + statName).html(updatedStatName);
+              $("#statValue" + statName).html(updatedStatValue);
+            }
+          });
+
+          $("#abilitiesTable tr").each(function () {
+            var abilityName = $(this).find("span:first").attr("id").replace("abilityName", "");
+            var updatedAbilityName = $(data).find("#abilityName" + abilityName).html();
+            var updatedAbilityFlavorText = $(data).find("#abilityFlavorText" + abilityName).html();
+            $(this).find("span:first").html(updatedAbilityName);
+            $(this).find("span:last").html(updatedAbilityFlavorText);
+          });
+
+   
+          $("#typeTable td").each(function () {
+            var typeName = $(this).find("span:first").attr("id").replace("typeName", "");
+            var updatedTypeName = $(data).find("#typeName" + typeName).html();
+            $(this).find("span:first").html(updatedTypeName);
+          });
+
       
-<tr class="stat-<%= stat['stat']['name'].downcase %>">
-  <td><%= stat['stat']['name'].split('-').map(&:capitalize).join(' ') %></td>
-  <td><%= stat['base_stat'] %></td>
-</tr>
-      <% end %>
-    </table>
-    <table>
-      <tr>
-        <td>
-          <p>Height: <%= @pokemon_details['height'] / 10.0 %> m</p>
-        </td>
-        <td>
-          <p>Weight: <%= @pokemon_details['weight'] / 10.0 %> kg</p>
-        </td>
-    </tr>
-  </table>
+          $("#heightValue").html($(data).find("#heightValue").html());
+          $("#weightValue").html($(data).find("#weightValue").html());
+        }
+      });
+    }
+  document.addEventListener('DOMContentLoaded', function () {
+    function loadNormalForm() {
+      $.ajax({
+        url: "<%= j pokemon_show_path(id: @pokemon_details['id']) %>",
+        success: function (data) {
+          updatePokemonDetails(data);
+        }
+      });
+    }
 
-  </div>
+    function updatePokemonDetails(data) {
+     
+      $("#pokemonName").text($(data).find("#pokemonName").text());
+      $("#pokemonImage").attr("src", $(data).find("#pokemonImage").attr("src"));
+
+      $.each(<%= raw @pokemon_details['stats'].to_json %>, function (index, stat) {
+        var statName = stat['stat']['name'];
+        var updatedStatName = $(data).find("#statName" + statName).html();
+        var updatedStatValue = $(data).find("#statValue" + statName).html();
+
+       
+        if (updatedStatName !== undefined && updatedStatValue !== undefined) {
+          $("#statName" + statName).html(updatedStatName);
+          $("#statValue" + statName).html(updatedStatValue);
+        }
+      });
+$("#abilitiesTable tr").each(function () {
+  var firstSpan = $(this).find("span:first");
+  if (firstSpan.length > 0) {
+    var abilityName = firstSpan.attr("id").replace("abilityName", "");
+    var updatedAbilityName = $(data).find("#abilityName" + abilityName).html();
+    var updatedAbilityFlavorText = $(data).find("#abilityFlavorText" + abilityName).html();
+
+ 
+    if (updatedAbilityName !== undefined) {
+      firstSpan.html(updatedAbilityName);
+
+   
+      if (updatedAbilityFlavorText !== undefined) {
+        $(this).find("span:last").html(updatedAbilityFlavorText);
+      }
+    }
+  }
+});
+<% @pokemon_details['types'].each_with_index do |type, index| %>
+    var typeName<%= index %> = '<%= type['type']['name'] %>';
+    var updatedTypeName<%= index %> = $(data).find("#typeName" + typeName<%= index %>).text();
+
+ 
+    if (updatedTypeName<%= index %> !== undefined) {
+        $("#typeTable td:eq(<%= index %>) span:first").text(updatedTypeName<%= index %>);
+    }
+<% end %>
+
+    
+      $("#heightValue").html($(data).find("#heightValue").html());
+      $("#weightValue").html($(data).find("#weightValue").html());
+    }
+
+    $(document).on("click", ".varietyButton", function () {
+      var url = $(this).data("url");
+    
+      $.ajax({
+        url: url,
+        success: function (data) {
+          updatePokemonDetails(data);
+        }
+      });
+    });
+  });
+</script>
 </body>
 </html>

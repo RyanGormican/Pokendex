@@ -12,6 +12,7 @@ class PokemonController < ApplicationController
     url = "https://pokeapi.co/api/v2/pokemon/#{pokemon_id}"
     @pokemon_details = fetch_data(url)
     @abilities = fetch_abilities(@pokemon_details['abilities'])
+    @varieties = fetch_varieties(@pokemon_details['species']['url'])
   end
 
   def types
@@ -75,6 +76,21 @@ class PokemonController < ApplicationController
       'white'
     end
   end
+def fetch_varieties(species_url)
+  species_data = fetch_data(species_url)
+  varieties = species_data['varieties'].reject { |variety| variety['is_default'] }
+  
+  varieties_details = varieties.map do |variety|
+    variety_data = fetch_data(variety['pokemon']['url'])
+    {
+      'name' => variety_data['name'],
+      'url' => pokemon_show_path(id: variety_data['id']) # Use the correct path helper for the variety URL
+    }
+  end
+
+  varieties_details
+end
+
 
   helper_method :determine_background_color, :fetch_flavor_text, :fetch_data
 end
