@@ -82,14 +82,19 @@ def fetch_varieties(species_url)
   
   varieties_details = varieties.map do |variety|
     variety_data = fetch_data(variety['pokemon']['url'])
+    abilities = fetch_abilities(variety_data['abilities'])
+        puts "Variety: #{variety_data['name']}, Abilities: #{abilities.inspect}"
+    
     {
       'name' => variety_data['name'],
-      'url' => pokemon_show_path(id: variety_data['id']) # Use the correct path helper for the variety URL
+      'url' => pokemon_show_path(id: variety_data['id']),
+      'abilities' => abilities
     }
   end
 
   varieties_details
 end
+
 
 
   helper_method :determine_background_color, :fetch_flavor_text, :fetch_data

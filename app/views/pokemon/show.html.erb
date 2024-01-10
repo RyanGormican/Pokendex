@@ -52,18 +52,20 @@
             <tr>
                 <th colspan="3">Abilities</th>
             </tr>
-            <% @pokemon_details['abilities'].each do |ability_data| %>
-            <tr>
-                <td>
-                    <span id="<%= "abilityName#{ability_data['ability']['name']}" %>"><%= ability_data['ability']['name'].capitalize %></span>
-                    <% flavor_text = fetch_flavor_text(ability_data['ability']['url']) %>
-                    <span id="<%= "abilityFlavorText#{ability_data['ability']['name']}" %>"><%= flavor_text ? " - #{flavor_text}" : '' %></span>
-                    <% if ability_data['is_hidden'] %>
-                    (Hidden Ability)
-                    <% end %>
-                </td>
-            </tr>
-            <% end %>
+     <% @pokemon_details['abilities'].each do |ability_data| %>
+  <tr data-ability-name="<%= ability_data['ability']['name'] %>">
+    <td>
+      <span class="ability-name" id="<%= "abilityName#{ability_data['ability']['name']}" %>"><%= ability_data['ability']['name'].capitalize %></span>
+      <% flavor_text = fetch_flavor_text(ability_data['ability']['url']) %>
+      <span id="<%= "abilityFlavorText#{ability_data['ability']['name']}" %>"><%= flavor_text ? " - #{flavor_text}" : '' %></span>
+      <% if ability_data['is_hidden'] %>
+      (Hidden Ability)
+      <% end %>
+    </td>
+  </tr>
+<% end %>
+
+
         </table>
         <!-- Stats table -->
         <table id="statsTable">
@@ -89,118 +91,125 @@
             </tr>
         </table>
     </div>
+<script>
+  var varieties_details = <%= raw @varieties.to_json %>;
+</script>
 
 <script>
+  var varieties_details = <%= raw @varieties.to_json %>;
+
   function loadNormalForm() {
-      $.ajax({
-        url: "<%= j pokemon_show_path(id: @pokemon_details['id']) %>",
-        success: function (data) {
-        
-          $("#pokemonName").text($(data).find("#pokemonName").text());
-          $("#pokemonImage").attr("src", $(data).find("#pokemonImage").attr("src"));
+    $.ajax({
+      url: "<%= j pokemon_show_path(id: @pokemon_details['id']) %>",
+      success: function (data) {
+        updatePokemonDetails(data);
+      }
+    });
+  }
 
-          $.each(<%= raw @pokemon_details['stats'].to_json %>, function (index, stat) {
-            var statName = stat['stat']['name'];
-            var updatedStatName = $(data).find("#statName" + statName).html();
-            var updatedStatValue = $(data).find("#statValue" + statName).html();
-
-            if (updatedStatName !== undefined && updatedStatValue !== undefined) {
-              $("#statName" + statName).html(updatedStatName);
-              $("#statValue" + statName).html(updatedStatValue);
-            }
-          });
-
-          $("#abilitiesTable tr").each(function () {
-            var abilityName = $(this).find("span:first").attr("id").replace("abilityName", "");
-            var updatedAbilityName = $(data).find("#abilityName" + abilityName).html();
-            var updatedAbilityFlavorText = $(data).find("#abilityFlavorText" + abilityName).html();
-            $(this).find("span:first").html(updatedAbilityName);
-            $(this).find("span:last").html(updatedAbilityFlavorText);
-          });
+  function updatePokemonDetails(data) {
+  
+    $("#pokemonName").text($(data).find("#pokemonName").text());
+    $("#pokemonImage").attr("src", $(data).find("#pokemonImage").attr("src"));
 
    
-          $("#typeTable td").each(function () {
-            var typeName = $(this).find("span:first").attr("id").replace("typeName", "");
-            var updatedTypeName = $(data).find("#typeName" + typeName).html();
-            $(this).find("span:first").html(updatedTypeName);
-          });
-
-      
-          $("#heightValue").html($(data).find("#heightValue").html());
-          $("#weightValue").html($(data).find("#weightValue").html());
-        }
-      });
-    }
-  document.addEventListener('DOMContentLoaded', function () {
-    function loadNormalForm() {
-      $.ajax({
-        url: "<%= j pokemon_show_path(id: @pokemon_details['id']) %>",
-        success: function (data) {
-          updatePokemonDetails(data);
-        }
-      });
-    }
-
-    function updatePokemonDetails(data) {
-     
-      $("#pokemonName").text($(data).find("#pokemonName").text());
-      $("#pokemonImage").attr("src", $(data).find("#pokemonImage").attr("src"));
-
-      $.each(<%= raw @pokemon_details['stats'].to_json %>, function (index, stat) {
-        var statName = stat['stat']['name'];
-        var updatedStatName = $(data).find("#statName" + statName).html();
-        var updatedStatValue = $(data).find("#statValue" + statName).html();
-
-       
-        if (updatedStatName !== undefined && updatedStatValue !== undefined) {
-          $("#statName" + statName).html(updatedStatName);
-          $("#statValue" + statName).html(updatedStatValue);
-        }
-      });
-$("#abilitiesTable tr").each(function () {
-  var firstSpan = $(this).find("span:first");
-  if (firstSpan.length > 0) {
-    var abilityName = firstSpan.attr("id").replace("abilityName", "");
-    var updatedAbilityName = $(data).find("#abilityName" + abilityName).html();
-    var updatedAbilityFlavorText = $(data).find("#abilityFlavorText" + abilityName).html();
+    $.each(<%= raw @pokemon_details['stats'].to_json %>, function (index, stat) {
+      var statName = stat['stat']['name'];
+      var updatedStatName = $(data).find("#statName" + statName).html();
+      var updatedStatValue = $(data).find("#statValue" + statName).html();
 
  
-    if (updatedAbilityName !== undefined) {
-      firstSpan.html(updatedAbilityName);
-
-   
-      if (updatedAbilityFlavorText !== undefined) {
-        $(this).find("span:last").html(updatedAbilityFlavorText);
+      if (updatedStatName !== undefined && updatedStatValue !== undefined) {
+        $("#statName" + statName).html(updatedStatName);
+        $("#statValue" + statName).html(updatedStatValue);
       }
+    });
+
+  <% @pokemon_details['types'].each_with_index do |type, index| %>
+      var typeName<%= index %> = '<%= type['type']['name'] %>';
+      var updatedTypeName<%= index %> = $(data).find("#typeName" + typeName<%= index %>).text();
+
+ 
+      if (updatedTypeName<%= index %> !== undefined) {
+        console.log('Type <%= index + 1 %>: ' + updatedTypeName<%= index %>);
+        $("#typeTable td.type-<%= type['type']['name'].downcase %> span:first").text(updatedTypeName<%= index %>);
+      } else {
+     
+        $("#typeTable td.type-<%= type['type']['name'].downcase %> span:first").text('');
+      }
+    <% end %>
+
+t
+    $("#heightValue").html($(data).find("#heightValue").html());
+    $("#weightValue").html($(data).find("#weightValue").html());
+      console.log("VARIETY");
+  console.log(varieties_details);
+      console.log("VARIETY");
+
+    updateAbilities(varieties_details, "#abilitiesTable tr");
+
+
+    if (<%= @pokemon_details['types'].length %> === 1) {
+      var secondTypeElement = $("#typeTable td.type-<%= @pokemon_details['types'][0]['type']['name'].downcase %> + td span:first");
+      secondTypeElement.text('');
+      secondTypeElement.addClass('hidden');
     }
   }
-});
-<% @pokemon_details['types'].each_with_index do |type, index| %>
-    var typeName<%= index %> = '<%= type['type']['name'] %>';
-    var updatedTypeName<%= index %> = $(data).find("#typeName" + typeName<%= index %>).text();
 
- 
-    if (updatedTypeName<%= index %> !== undefined) {
-        $("#typeTable td:eq(<%= index %>) span:first").text(updatedTypeName<%= index %>);
-    }
-<% end %>
+function updateAbilities(varieties, selector) {
+  $(selector).each(function () {
+    var abilityName = $(this).find("span:first").text().trim().toLowerCase(); 
+    console.log('Searching for Ability:', abilityName);
 
-    
-      $("#heightValue").html($(data).find("#heightValue").html());
-      $("#weightValue").html($(data).find("#weightValue").html());
-    }
+  
+    var updatedAbility = null;
 
-    $(document).on("click", ".varietyButton", function () {
-      var url = $(this).data("url");
-    
-      $.ajax({
-        url: url,
-        success: function (data) {
-          updatePokemonDetails(data);
-        }
+    $.each(varieties, function (index, variety) {
+      console.log('Checking variety:', variety.name, 'Abilities:', variety.abilities);
+      var ability = variety.abilities.find(function (ability) {
+        return ability.name.toLowerCase() === abilityName;
       });
+
+      if (ability) {
+        updatedAbility = ability;
+        return false; 
+      }
+    });
+
+    console.log('Search Result:', updatedAbility);
+
+    if (updatedAbility !== null) {
+      console.log('Ability: ' + updatedAbility.name);
+      console.log('Flavor Text: ' + updatedAbility.flavor_text);
+
+
+
+      $(this).find("span:first").html(updatedAbility.name);
+
+      if (typeof updatedAbility.flavor_text !== 'undefined') {
+        $(this).find("span:last").html(updatedAbility.flavor_text);
+      }
+    } else {
+      $(this).find("span:first").text('');
+      $(this).find("span:last").text('');
+    }
+  });
+}
+
+
+  $(document).on("click", ".varietyButton", function () {
+    var url = $(this).data("url");
+
+    $.ajax({
+      url: url,
+      success: function (data) {
+        updatePokemonDetails(data);
+      }
     });
   });
 </script>
+
+
 </body>
 </html>
+
